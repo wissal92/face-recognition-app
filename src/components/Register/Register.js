@@ -17,7 +17,8 @@ class Register extends Component{
     )
       .then(res => res.json())
       .then(user => {
-        if(user.id){
+        //if(user.id){
+        if(user){
           this.props.loadUser(user)
           this.props.handleRouteChange('home');
         }

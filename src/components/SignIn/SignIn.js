@@ -11,7 +11,7 @@ class SignIn extends Component{
   }
 
   onSubmitSignIn = e =>{
-    //to send tha data to our server. fetchby default uses get request but if we wanna 
+    //to send tha data to our server. fetch by default uses get request but if we wanna 
     //change it we could pass an object as a second parameter that describes what the 
     //request would be
     fetch('http://localhost:3000/signin', {method: 'post',
