@@ -29,10 +29,32 @@ const particlesOptions = {
 class App extends Component {
   constructor(){
     super();
-    this.state = {input: '', imageUrl: '', box: {}, route: 'signin', isSignedIn: false}
+    this.state = {
+      input: '',
+      imageUrl: '', 
+      box: {}, 
+      route: 'signin', 
+      isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      }
+    }
+  }
+  
+  loadUser = data => {
+    this.setState({user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
-  
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
@@ -54,13 +76,23 @@ class App extends Component {
     this.setState({input: e.target.value})
   }
 
-  handleSubmit = e => {
+  handleSubmitPhoto = e => {
     this.setState({imageUrl: this.state.input});
     app.models
-      .predict(
-        Clarifai.FACE_DETECT_MODEL,
-        this.state.input)
-      .then(response => this.displayFaceBox(this.calculateFaceLocation(response)))
+      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+      .then(res => {
+        if(res){
+          fetch('http://localhost:3000/image', {method: 'put',
+          headers:{'Content-Type': 'application/json'}, 
+          body: JSON.stringify({id: this.state.user.id})
+        })
+        .then(response => response.json())
+        .then(count => {
+          this.setState(Object.assign(this.state.user, { entries: count}))
+        })
+      }
+       this.displayFaceBox(this.calculateFaceLocation(res))
+      })
       .catch(err => console.log(err));
   }
 
@@ -84,14 +116,14 @@ class App extends Component {
         {route === 'home'
          ? <>
             <Logo />
-            <Rank />
-            <ImageLinkForm handleChange={this.handleChange} handleSubmit={this.handleSubmit}/>
+            <Rank name={this.state.user.name} entries={this.state.user.entries} />
+            <ImageLinkForm handleChange={this.handleChange} handleSubmit={this.handleSubmitPhoto}/>
             <FaceRecognition box={box} imageUrl={imageUrl}/>
            </>
          : (
            route === 'signin'
-           ? <SignIn handleRouteChange={this.handleRouteChange}/>
-           : <Register handleRouteChange={this.handleRouteChange}/>
+           ? <SignIn handleRouteChange={this.handleRouteChange} loadUser={this.loadUser}/>
+           : <Register handleRouteChange={this.handleRouteChange} loadUser={this.loadUser}/>
          )
         }
       </div>

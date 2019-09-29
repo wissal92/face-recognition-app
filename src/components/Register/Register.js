@@ -1,6 +1,30 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-const Register = ({handleRouteChange}) => {
+class Register extends Component{
+  constructor(props){
+    super(props);
+    this.state = {email: '', password: '', name: ''};
+  }
+
+  handleChange = e =>{
+    this.setState({[e.target.name]: e.target.value})
+  }
+
+  onRegister = e =>{
+    fetch('http://localhost:3000/register', {method: 'post',
+     headers:{'Content-Type': 'application/json'}, 
+     body: JSON.stringify({email: this.state.email, password: this.state.password, name: this.state.name})}
+    )
+      .then(res => res.json())
+      .then(user => {
+        if(user.id){
+          this.props.loadUser(user)
+          this.props.handleRouteChange('home');
+        }
+      })
+  }
+  
+  render(){
     return (
     <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
@@ -14,7 +38,7 @@ const Register = ({handleRouteChange}) => {
                 type="text"
                 name="name"
                 id="name"
-                // onChange={this.onEmailChange}
+                onChange={this.handleChange}
               />
             </div>
             <div className="mt3">
@@ -22,9 +46,9 @@ const Register = ({handleRouteChange}) => {
               <input
                 className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                 type="email"
-                name="email-address"
+                name="email"
                 id="email-address"
-                // onChange={this.onEmailChange}
+                onChange={this.handleChange}
               />
             </div>
             <div className="mv3">
@@ -34,14 +58,13 @@ const Register = ({handleRouteChange}) => {
                 type="password"
                 name="password"
                 id="password"
-                
+                onChange={this.handleChange}
               />
             </div>
           </fieldset>
           <div className="">
             <input
-            //   onClick={this.onSubmitSignIn}
-              onClick={() => handleRouteChange('home')}
+              onClick={this.onRegister}
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
               type="submit"
               value="Register"
@@ -51,6 +74,7 @@ const Register = ({handleRouteChange}) => {
       </main>
     </article>
     );
+  }
 }
 
 export default Register;

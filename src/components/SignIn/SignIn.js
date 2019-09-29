@@ -1,6 +1,34 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-const SignIn = ({handleRouteChange}) => {
+class SignIn extends Component{
+  constructor(props){
+    super(props);
+    this.state = {email: '', password: ''};
+  }
+
+  handleChange = e =>{
+    this.setState({[e.target.name]: e.target.value})
+  }
+
+  onSubmitSignIn = e =>{
+    //to send tha data to our server. fetchby default uses get request but if we wanna 
+    //change it we could pass an object as a second parameter that describes what the 
+    //request would be
+    fetch('http://localhost:3000/signin', {method: 'post',
+     headers:{'Content-Type': 'application/json'}, 
+     body: JSON.stringify({email: this.state.email, password: this.state.password})}
+    )
+      .then(res => res.json())
+      .then(user => {
+        if(user.id){
+          this.props.loadUser(user);
+          this.props.handleRouteChange('home');
+        }
+      })
+  }
+
+  render(){
+    const {handleRouteChange} = this.props;
     return (
     <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
@@ -12,9 +40,9 @@ const SignIn = ({handleRouteChange}) => {
               <input
                 className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                 type="email"
-                name="email-address"
+                name="email"
                 id="email-address"
-                // onChange={this.onEmailChange}
+                onChange={this.handleChange}
               />
             </div>
             <div className="mv3">
@@ -24,14 +52,14 @@ const SignIn = ({handleRouteChange}) => {
                 type="password"
                 name="password"
                 id="password"
-                
+                onChange={this.handleChange}
               />
             </div>
           </fieldset>
           <div className="">
             <input
-            //   onClick={this.onSubmitSignIn}
-              onClick={() => handleRouteChange('home')}
+              onClick={this.onSubmitSignIn}
+              //onClick={() => handleRouteChange('home')}
               className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
               type="submit"
               value="Sign in"
@@ -44,6 +72,7 @@ const SignIn = ({handleRouteChange}) => {
       </main>
     </article>
     );
+  }
 }
 
 export default SignIn;
