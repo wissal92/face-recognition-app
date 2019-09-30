@@ -11,14 +11,14 @@ class Register extends Component{
   }
 
   onRegister = e =>{
-    fetch('http://localhost:3000/register', {method: 'post',
+    fetch('https://hidden-ravine-11639.herokuapp.com/register', {method: 'post',
      headers:{'Content-Type': 'application/json'}, 
      body: JSON.stringify({email: this.state.email, password: this.state.password, name: this.state.name})}
     )
       .then(res => res.json())
       .then(user => {
         //if(user.id){
-        if(user){
+        if(user.id){
           this.props.loadUser(user)
           this.props.handleRouteChange('home');
         }

@@ -14,7 +14,7 @@ class SignIn extends Component{
     //to send tha data to our server. fetch by default uses get request but if we wanna 
     //change it we could pass an object as a second parameter that describes what the 
     //request would be
-    fetch('http://localhost:3000/signin', {method: 'post',
+    fetch('https://hidden-ravine-11639.herokuapp.com/signin', {method: 'post',
      headers:{'Content-Type': 'application/json'}, 
      body: JSON.stringify({email: this.state.email, password: this.state.password})}
     )
